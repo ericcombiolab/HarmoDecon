@@ -2,7 +2,7 @@
 
 ### **Overview**
 
-![Fig 1](https://github.com/raywzr/HarmoDecon/assets/81131673/bfc20f57-6258-4865-89b1-05ca1c9c8d84)
+![317642793-bfc20f57-6258-4865-89b1-05ca1c9c8d84](https://github.com/ericcombiolab/HarmoDecon/assets/81131673/e6691ea6-c774-4163-b389-5a0218198a0f)
 
 ## **Description**
 
@@ -78,19 +78,19 @@ docker run --memory 5g harmodecon:v1
 
 Should be in .h5ad format, with gene names annotated in "var", cell type annotated in "obs"(the key name should be "celltype").
 
-![image-20240328153728086](https://github.com/raywzr/HarmoDecon/assets/81131673/20f44027-b28d-4a69-bb4b-337fae0f87fa)
+![317642930-20f44027-b28d-4a69-bb4b-337fae0f87fa](https://github.com/ericcombiolab/HarmoDecon/assets/81131673/198188b3-f853-495a-aa35-1cabb716bd78)
 
-![image-20240328153749220](https://github.com/raywzr/HarmoDecon/assets/81131673/e7ff0add-0896-429e-ada6-6cb24462cbbc)
+![317642955-e7ff0add-0896-429e-ada6-6cb24462cbbc](https://github.com/ericcombiolab/HarmoDecon/assets/81131673/d0bea230-72e1-4b29-8625-0aaa60248f03)
 
 ##### Spatial transciptomics data: 
 
 The gene Expression matrix should be in .h5ad format, with gene names annotated in "var".
 
-![image-20240328153811950](https://github.com/raywzr/HarmoDecon/assets/81131673/bdb8bf7e-f00d-42d0-9810-c9392f82e4d6)
+![317643005-bdb8bf7e-f00d-42d0-9810-c9392f82e4d6](https://github.com/ericcombiolab/HarmoDecon/assets/81131673/fcf095e9-346f-4f76-9526-75f4b4f48c09)
 
 The location metadata should be in .txt or .tsv format, separated by '\t', including two columns: x and y.
 
-![image-20240328145627548](https://github.com/raywzr/HarmoDecon/assets/81131673/db4c990d-bf18-4eb2-b5d1-a0fdf37007fe)
+![317643095-db4c990d-bf18-4eb2-b5d1-a0fdf37007fe](https://github.com/ericcombiolab/HarmoDecon/assets/81131673/812025e6-aa3c-4d27-91ac-779c1db4a085)
 
  Examples of data preprocessing(to get the above format) are included in ./script folder.
 
@@ -98,7 +98,7 @@ The location metadata should be in .txt or .tsv format, separated by '\t', inclu
 
 In our method, scRNA-seq data are used to generate/synthesize pseudo spots. Pseudo-spot data includes cell type proportion profiles, which can be utilized to instruct the model.
 
-![image-20240328153835689](https://github.com/raywzr/HarmoDecon/assets/81131673/289f0d60-0ec7-47a0-a484-eb8b8db6a2f2)
+![317643154-289f0d60-0ec7-47a0-a484-eb8b8db6a2f2](https://github.com/ericcombiolab/HarmoDecon/assets/81131673/ff2e51e3-8cfa-40a9-b18a-0bc111ef30a5)
 
 The input of the model can either be scRNA-seq data or pseudo spots. If the scRNA-seq is used, the model will synthesize spots from scratch. If pseudo spots are available, they can be reused for training to save time.
 
@@ -119,10 +119,9 @@ To evaluate and visualize the result.
 python test.py --input ./configs/osm.json --epoch 20 --seed 1
 ```
 
-![osm_L4_5 IT CTX](https://github.com/raywzr/HarmoDecon/assets/81131673/fae2dd0c-3f56-4934-9d36-971d8ae64483)
+![317643376-fae2dd0c-3f56-4934-9d36-971d8ae64483](https://github.com/ericcombiolab/HarmoDecon/assets/81131673/af776b42-c9f1-4f98-b022-2cfe89934b05)
 
-![osm_pie_plot](https://github.com/raywzr/HarmoDecon/assets/81131673/0faa3a05-f078-4b4f-8cda-35da20d12cbc)
-
+![317643437-0faa3a05-f078-4b4f-8cda-35da20d12cbc](https://github.com/ericcombiolab/HarmoDecon/assets/81131673/9ff8e3ed-afe5-48aa-be9e-322f73451a20)
 
 ## **Reference**
 
