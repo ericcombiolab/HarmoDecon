@@ -106,10 +106,12 @@ def pseudo_spot_generation(sc_exp,
 
 if __name__=="__main__":
     # pseudo_path = "/home/comp/cszrwang/project/Geneformer_test/STARmap/toy/starmap_sc_rna.h5ad"
-    pseudo_path = "./data/starmap_sc_rna.h5ad"
+    # pseudo_path = "./data/starmap_sc_rna.h5ad"
+    pseudo_path = "D:/Data/BGI/YANG_Chao/ESCC_Public_anno.h5ad"
     pseudo_adata = sc.read_h5ad(pseudo_path)
     # ST_path = "/home/comp/cszrwang/project/Geneformer_test/STARmap/toy/starmap_spatial_ST.h5ad"
-    ST_path = "./data/starmap_spatial_ST.h5ad"
+    # ST_path = "./data/starmap_spatial_ST.h5ad"
+    ST_path = "D:/Data/BGI/YANG_Chao/C03031E2_bin500.h5ad"
     ST_adata = sc.read_h5ad(ST_path)
 
     ST_genes = ST_adata.var.index.values

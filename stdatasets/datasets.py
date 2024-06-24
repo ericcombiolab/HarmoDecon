@@ -170,7 +170,8 @@ class StDataset(Dataset):
         if not all(gene in pseudo_spots_genes for gene in st_genes):
             print("Not all the genes in ST recorded in pseudo spots")
             common_genes = set(st_genes).intersection(set(pseudo_spots_genes))
-            pseudo_data = pseudo_data[:, common_genes]
+            pseudo_data = pseudo_data[:, list(common_genes)]
+            pre_data = pre_data[:, list(common_genes)]
         else:
             pseudo_data = pseudo_data[:, pre_data.var_names]
         path = "./pseudo_graph_tmp.h5ad"
