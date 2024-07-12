@@ -2,7 +2,8 @@
 
 ### **Overview**
 
-![317642793-bfc20f57-6258-4865-89b1-05ca1c9c8d84](https://github.com/ericcombiolab/HarmoDecon/assets/81131673/e6691ea6-c774-4163-b389-5a0218198a0f)
+![Fig 1 new](https://github.com/user-attachments/assets/e900063c-c7bf-4f75-95ef-989679876098)
+
 
 ## **Description**
 
