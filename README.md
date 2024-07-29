@@ -132,7 +132,7 @@ python test.py --input ./configs/osm.json --epoch 20 --seed 1
 
 ## **Contact**
 
-If any questions, please feel free to contact me or my supervisor, Dr.Eric Zhang.
+If any questions, please feel free to contact me or my supervisor, Prof. Eric Zhang.
 
 WANG Zirui: cszrwang@cse.hkbu.edu.hk zrwang18@gmail.com
 
