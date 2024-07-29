@@ -2,7 +2,7 @@
 
 ### **Overview**
 
-![Fig 1 new](https://github.com/user-attachments/assets/e900063c-c7bf-4f75-95ef-989679876098)
+![HarmoDecon 7 4](https://github.com/user-attachments/assets/48790181-b18d-47b9-ae4e-ca6191a665f3)
 
 
 ## **Description**
