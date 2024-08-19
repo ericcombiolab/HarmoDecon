@@ -122,7 +122,8 @@ python test.py --input ./configs/osm.json --epoch 20 --seed 1
 
 ![317643376-fae2dd0c-3f56-4934-9d36-971d8ae64483](https://github.com/ericcombiolab/HarmoDecon/assets/81131673/af776b42-c9f1-4f98-b022-2cfe89934b05)
 
-![317643437-0faa3a05-f078-4b4f-8cda-35da20d12cbc](https://github.com/ericcombiolab/HarmoDecon/assets/81131673/9ff8e3ed-afe5-48aa-be9e-322f73451a20)
+![osm_pie_plot](https://github.com/user-attachments/assets/cc1cfb25-c857-4209-bce1-85f7e078b678)
+
 
 ## **Reference**
 
