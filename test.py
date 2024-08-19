@@ -270,6 +270,6 @@ if __name__ == "__main__":
 
         print("Plotting pie charts...")
 
-        plot_frac_results(np.array(mean_out), header, loc, point_size=300,
+        plot_frac_results(np.array(mean_out), mean_out.columns, loc, point_size=300,
                           size_coefficient=0.0009
                           , file_name=fig_path + f'/{sub_name}_pie_plot.jpg')
