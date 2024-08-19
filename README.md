@@ -121,7 +121,7 @@ python test.py --input ./configs/osm.json --epoch 20 --seed 1
 
 ![osm_L4_5 IT CTX](https://github.com/raywzr/HarmoDecon/assets/81131673/fae2dd0c-3f56-4934-9d36-971d8ae64483)
 
-![osm_pie_plot](https://github.com/raywzr/HarmoDecon/assets/81131673/0faa3a05-f078-4b4f-8cda-35da20d12cbc)
+![osm_pie_plot](https://github.com/user-attachments/assets/415ba550-4b79-43e4-90a7-0ef0e270abec)
 
 
 ## **Reference**
