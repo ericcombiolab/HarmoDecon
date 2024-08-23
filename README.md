@@ -70,7 +70,7 @@ To run the docker:
 
 ```bash
 # Set the memory more than 4g. 
-docker run -t -d --memory 5g harmodecon:v12
+docker run -t -d --memory 5g harmodecon:v2
 cd home
 cd HarmoDecon
 # Run the training script to reproduce the result of the osmFISH dataset.
