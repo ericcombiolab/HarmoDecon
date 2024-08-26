@@ -65,7 +65,7 @@ class GMGATModel(nn.Module):
             nn.ReLU(),
             # nn.Dropout(0.1),
             nn.Linear(40, 2),
-            nn.Softmax(dim=2),
+            # nn.Softmax(dim=2),
         )
         self.decon_model = nn.Sequential(
             nn.Linear(512, 256),
