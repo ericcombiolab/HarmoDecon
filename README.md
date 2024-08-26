@@ -69,8 +69,14 @@ docker pull zrwangbrazy/harmodecon
 To run the docker:
 
 ```bash
-# set the memory more than 4g. 
-docker run --memory 5g harmodecon:v1
+# Set the memory more than 4g. 
+docker run -t -d --memory 5g harmodecon:v2
+cd home
+cd HarmoDecon
+# Run the training script to reproduce the result of the osmFISH dataset.
+python main.py --input ./configs/osm.json
+# Plot pie charts and heat maps. Specify the random seed and which epoch you want to fetch the pre-trained model.
+python test.py --input ./configs/osm.json --seed 1 --epoch 20
 ```
 
 ## **Input Format**
