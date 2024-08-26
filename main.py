@@ -89,7 +89,7 @@ adaptation_ratio = hyperparameters['adaptation_ratio']
 
 def train(model, pseudo_loader, real_loader, loss_functions, gpu_id, proj_name, sub_name, num_epochs, seed):
     if proj_name:
-        wandb.init(project=proj_name, entity='zray', name=f"{sub_name}_{str(seed)}")
+        wandb.init(project=proj_name, name=f"{sub_name}_{str(seed)}")
 
     if gpu_id != None:
         device = torch.device("cuda:{}".format(gpu_id))
