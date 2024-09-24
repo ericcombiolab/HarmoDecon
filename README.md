@@ -4,10 +4,15 @@
 
 ![HarmoDecon 7 4](https://github.com/user-attachments/assets/48790181-b18d-47b9-ae4e-ca6191a665f3)
 
-
 ## **Description**
 
 HarmoDecon is a deconvolution tool for spatially resolved transcriptomics data.
+
+## **System requirement**
+
+OS: Linux (suggest), Windows 10.
+GPU is a plus but not necessary.
+Python and other dependencies: [environment.yaml](environment.yaml)
 
 ## **Installation**
 
@@ -41,7 +46,7 @@ pip install torch==2.0.1+cpu torchvision==0.15.2+cpu
 pip install torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/cpu
 ```
 
-##### For CPU implementation
+##### For GPU implementation
 
 Look up the websites of DGL and Pytorch for command lines with specified CUDA settings.
 
@@ -128,12 +133,7 @@ python test.py --input ./configs/osm.json --epoch 20 --seed 1
 
 ![317643376-fae2dd0c-3f56-4934-9d36-971d8ae64483](https://github.com/ericcombiolab/HarmoDecon/assets/81131673/af776b42-c9f1-4f98-b022-2cfe89934b05)
 
-<<<<<<< HEAD
 ![osm_pie_plot](https://github.com/user-attachments/assets/415ba550-4b79-43e4-90a7-0ef0e270abec)
-=======
-![osm_pie_plot](https://github.com/user-attachments/assets/cc1cfb25-c857-4209-bce1-85f7e078b678)
->>>>>>> 0807dc96d0c81bc18218cb25b35cd08628e41954
-
 
 ## **Reference**
 
