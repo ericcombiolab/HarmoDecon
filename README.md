@@ -8,10 +8,12 @@
 
 HarmoDecon is a deconvolution tool for spatially resolved transcriptomics data.
 
-## **System requirement**
+## **Requirements**
 
 OS: Linux (suggest), Windows 10.
+
 GPU is a plus but not necessary.
+
 Python and other dependencies: [environment.yaml](environment.yaml)
 
 ## **Installation**
