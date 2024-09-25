@@ -306,9 +306,9 @@ if __name__ == '__main__':
 
         sc_adata_filter = sc_adata[:, list(common_genes)]
 
-        spots_adata = pseudo_spot_generation(sc_exp=sc_adata_filter, spot_num=50000, lam=5,
+        spots_adata = pseudo_spot_generation(sc_exp=sc_adata_filter, spot_num=num_spots, lam=mean_num_cells_each_spot - 1,
                                            generation_method='celltype',
-                                           max_cell_types_in_spot=4, n_jobs=num_cpu)
+                                           max_cell_types_in_spot=max_cell_types_each_spot, n_jobs=num_cpu)
         spots_adata.write('./pseudo_spots_tmp.h5ad')
         pseudo_st_path = './pseudo_spots_tmp.h5ad'
     real_dataset = StDataset(data_path=real_st_path, location_path=real_location_path, pseudo_st_path=pseudo_st_path,
