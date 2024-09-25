@@ -22,7 +22,7 @@ Clone the project and create a virtual environment.
 
 ```bash
 # clone the project
-git clone https://github.com/raywzr/HarmoDecon.git
+git clone https://github.com/ericcombiolab/HarmoDecon.git
 cd HarmoDecon
 
 # create a conda environment
