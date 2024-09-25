@@ -38,7 +38,7 @@ default_hyper = {
     # Make effect when pseudo_st_path is None.
     'max_cell_types_each_spot': 4, # Int(optional): The expected maximum number of cell types within each spot.
     # Make effect when pseudo_st_path is None.
-    'num_cpu': 4, # Int(optional): The number of CPU deployed for pseudo spots generation.
+    'num_cpu': -1, # Int(optional): The number of CPU deployed for pseudo spots generation.
     'num_nodes': 200, # Int(optional): The number of nodes within each pseudo graph,
     # In contrast with the number of spots in the ST.
     'num_epochs': 20, # Int(optional): The number of training epochs. Default set to 20.
@@ -308,7 +308,7 @@ if __name__ == '__main__':
 
         spots_adata = pseudo_spot_generation(sc_exp=sc_adata_filter, spot_num=50000, lam=5,
                                            generation_method='celltype',
-                                           max_cell_types_in_spot=4, n_jobs=-1)
+                                           max_cell_types_in_spot=4, n_jobs=num_cpu)
         spots_adata.write('./pseudo_spots_tmp.h5ad')
         pseudo_st_path = './pseudo_spots_tmp.h5ad'
     real_dataset = StDataset(data_path=real_st_path, location_path=real_location_path, pseudo_st_path=pseudo_st_path,
