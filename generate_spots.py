@@ -76,12 +76,12 @@ def pseudo_spot_generation(sc_exp,
             generated_spots.append(generate_a_spot_passion(*f))
 
 
-    pseudo_spots = []
+    # pseudo_spots = []
     pseudo_spots_table = np.zeros((spot_num, sc_exp.shape[1]), dtype=float)
     pseudo_fraction_table = np.zeros((spot_num, cell_type_num), dtype=float)
-    for i in range(spot_num):
+    for i in tqdm(range(spot_num), desc='Obtain labels'):
         one_spot = generated_spots[i]
-        pseudo_spots.append(one_spot)
+        # pseudo_spots.append(one_spot)
         pseudo_spots_table[i] = one_spot.X.sum(axis=0)
         for j in one_spot.obs.index:
             cell_type = one_spot.obs.loc[j, 'celltype']
