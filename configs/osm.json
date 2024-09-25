@@ -3,5 +3,5 @@
   "sub_name":"osm",
   "real_st_path": "./data/st_osm.h5ad",
   "real_location_path": "./data/osm_cor.txt",
-  "pseudo_st_path" : "./data/pseudo_osm.h5ad",
+  "pseudo_st_path" : "./data/pseudo_osm.h5ad"
 }
