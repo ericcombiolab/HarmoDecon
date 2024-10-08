@@ -36,23 +36,27 @@ try:
     pseudo_st_path = config['pseudo_st_path']
 except:
     pseudo_st_path = None
-pseudo_node_num = config['num_nodes']
-num_epochs = config['num_epochs']
-graph_model = config['graph_model']
-seed_list = config['seed_list']
-hvg = config['hvg']
-scale = config['scale']
-ablation = config['ablation']
-domain_classes = config['domain_classes']
+
 try:
-    dataset = config['dataset']
+    hvg = config['hvg']
 except:
-    dataset = "STARmap"
-# hidden_classes = config['hidden_classes']
+    hvg = True
+
+try:
+    scale = config['scale']
+except:
+    scale = True
+
+try:
+    domain_classes = config['domain_classes']
+except:
+    domain_classes = 16
+
 try:
     spatial_dist = config['spatial_dist']
 except:
     spatial_dist = 1.5
+
 try:
     gpu_id = config['gpu_id']
 except:
@@ -74,7 +78,7 @@ def plot_heatmap(loc, result, sub_name, save_dir):
         #         print(celltype_ind)
         c_ind = celltype_ind
         fig, axes = plt.subplots(ncols=1, nrows=1, figsize=(int(8 * width / height), 8))
-        s = 200
+        s = 20
         axes.scatter(x=loc['x'], y=loc['y'], c=result.iloc[:, c_ind].to_list(), s=s, marker='s')
         axes.scatter(x=15, y=60, c=0, s=s, marker='s', )
         axes.set_xlim(loc['x'].min() - 1, loc['x'].max() + 1)
@@ -205,7 +209,7 @@ if __name__ == "__main__":
 
     real_loader = DataLoader(real_data, batch_size=1)
 
-    model = GMGATModel(block_type=graph_model, num_heads=2, st_encoder_in_channels=[num_hvg, 256, 256]
+    model = GMGATModel(block_type="GCN", num_heads=2, st_encoder_in_channels=[num_hvg, 256, 256]
                        , num_classes=domain_classes, num_cell_type=num_cell_types)
 
     model.load_state_dict(torch.load(model_path))
