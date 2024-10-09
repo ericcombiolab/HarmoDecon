@@ -67,7 +67,7 @@ seed = int(args.seed)
 model_path = f"./checkpoints/{sub_name}/{sub_name}_{epoch}_seed{seed}.model"
 
 
-def plot_heatmap(loc, result, sub_name, save_dir):
+def plot_heatmap(loc, result, sub_name, save_dir, size):
     loc = loc.astype(int)
     width = loc['x'].max() - loc['x'].min()
     height = loc['y'].max() - loc['y'].min()
@@ -78,7 +78,7 @@ def plot_heatmap(loc, result, sub_name, save_dir):
         #         print(celltype_ind)
         c_ind = celltype_ind
         fig, axes = plt.subplots(ncols=1, nrows=1, figsize=(int(8 * width / height), 8))
-        s = 20
+        s = size
         axes.scatter(x=loc['x'], y=loc['y'], c=result.iloc[:, c_ind].to_list(), s=s, marker='s')
         axes.scatter(x=15, y=60, c=0, s=s, marker='s', )
         axes.set_xlim(loc['x'].min() - 1, loc['x'].max() + 1)
@@ -270,7 +270,7 @@ if __name__ == "__main__":
 
         print("Plotting heatmaps...")
 
-        plot_heatmap(loc=loc, result=mean_out, sub_name=sub_name, save_dir=fig_path)
+        plot_heatmap(loc=loc, result=mean_out, sub_name=sub_name, save_dir=fig_path, size=int(60000/len(np.array(loc))))
 
         print("Plotting pie charts...")
 
