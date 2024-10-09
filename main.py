@@ -347,4 +347,3 @@ if __name__ == '__main__':
         print(f"total graphs of pseudo-spots for pre-training: {len(pseudo_loader)}")
         print(f"start training seed{i}")
         train(model, pseudo_loader, real_loader, loss_functions, gpu_id, proj_name, sub_name, num_epochs, i)
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
