@@ -236,10 +236,12 @@ def train(model, pseudo_loader, real_loader, loss_functions, gpu_id, proj_name, 
             wandb.log({'epoch': epoch + 1, 'average_st_global_loss': average_sc_global_loss})
             wandb.log({'epoch': epoch + 1, 'average_st_self_loss': average_sc_self_loss})
 
-        print('average_sc_recon_loss: %.3f, average_sc_mse_loss: %.3f' % (average_sc_recon_loss, average_sc_mse_loss))
-        print('average_sc_ce_loss: %.3f, average_st_recon_loss: %.3f' % (average_sc_ce_loss, average_st_recon_loss))
-        print('average_st_ce_loss: %.3f' % average_st_ce_loss)
-        print('average_sc_global_loss: %.3f, average_sc_self_loss: %.3f' % (average_sc_global_loss, average_sc_self_loss))
+        print('average_mse_loss: %.3f' % (average_sc_mse_loss))
+
+        # print('average_sc_recon_loss: %.3f, average_sc_mse_loss: %.3f' % (average_sc_recon_loss, average_sc_mse_loss))
+        # print('average_sc_ce_loss: %.3f, average_st_recon_loss: %.3f' % (average_sc_ce_loss, average_st_recon_loss))
+        # print('average_st_ce_loss: %.3f' % average_st_ce_loss)
+        # print('average_sc_global_loss: %.3f, average_sc_self_loss: %.3f' % (average_sc_global_loss, average_sc_self_loss))
 
         if early_stop:
             running_val_mse_los = 0
@@ -320,11 +322,9 @@ if __name__ == '__main__':
 
     num_hvg = len(real_dataset[0][0][-1])
 
-    print(f"number of hvg{num_hvg}")
-
     real_loader = DataLoader(real_dataset, batch_size=1)
 
-    print(f"total real graphs for unsupervised training: {len(real_loader)}")
+    print(f"total real SRT for unsupervised training: {len(real_loader)}")
 
     loss_functions = LossFunctions()
 
@@ -344,7 +344,7 @@ if __name__ == '__main__':
         pseudo_dataset = PseudoDataset(data_path='./pseudo_graph_tmp.h5ad', node_num=pseudo_node_num, seed=i, scale=scale)
 
         pseudo_loader = DataLoader(pseudo_dataset, batch_size=1, shuffle=True)
-        print(f"total pseudo graphs for training: {len(pseudo_loader)}")
+        print(f"total graphs of pseudo-spots for pre-training: {len(pseudo_loader)}")
         print(f"start training seed{i}")
         train(model, pseudo_loader, real_loader, loss_functions, gpu_id, proj_name, sub_name, num_epochs, i)
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
