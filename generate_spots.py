@@ -54,9 +54,16 @@ def pseudo_spot_generation(sc_exp,
     for i in tqdm(range(spot_num), desc='Obtain labels'):
         one_spot = generated_spots[i]
         pse_srt_table[i] = one_spot.X.sum(axis=0)
+        # for j in one_spot.obs.index:
+        #     cell_type = one_spot.obs.loc[j, 'celltype']
+        #     type_idx = word_to_idx_celltype[cell_type]
+        #     pse_fraction_table[i, type_idx] += 1
         for j in one_spot.obs.index:
             cell_type = one_spot.obs.loc[j, 'celltype']
-            type_idx = word_to_idx_celltype[cell_type]
+            if type(cell_type) == str:
+                type_idx = word_to_idx_celltype[cell_type]
+            else:
+                type_idx = cell_type.map(word_to_idx_celltype)
             pse_fraction_table[i, type_idx] += 1
     pse_srt_table = pd.DataFrame(pse_srt_table, columns=sc_exp.var.index.values)
     adata_pse_srt = sc.AnnData(X=pse_srt_table.values)
