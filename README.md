@@ -7,6 +7,9 @@
 ## **Description**
 
 HarmoDecon is a deconvolution tool for spatially resolved transcriptomics data.
+Model Implementation: ./main.py, ./models, ./stdatasets.
+Custom code for visualization & evaluation: ./test.py, ./scripts.
+Implementation of comparison methods: ./scripts/comparison_methods.
 
 ## **Requirements**
 
