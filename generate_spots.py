@@ -41,7 +41,7 @@ def pseudo_spot_generation(sc_exp,
 
     if n_jobs > 0:
         args = [(sc_exp, lam, max_cell_types_in_spot, library) for i in range(spot_num)]
-        generated_spots = pool.starmap(generate_a_spot_passion, tqdm(args, desc='Generating pseudo-spots'))
+        generated_spots = pool.starmap(generate_a_spot_poisson, tqdm(args, desc='Generating pseudo-spots'))
     else:
         # generated_spots = []
         # for f in tqdm(args, desc='Generating pseudo-spots'):

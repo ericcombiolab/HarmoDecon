@@ -15,6 +15,7 @@ from generate_spots import pseudo_spot_generation
 import scanpy as sc
 from utils.makeGraph import ST_preprocess
 import warnings
+import time
 warnings.filterwarnings("ignore")
 
 parser = argparse.ArgumentParser(description='Process JSON input')
@@ -38,7 +39,7 @@ default_hyper = {
     # Make effect when pseudo_st_path is None.
     'max_cell_types_each_spot': 4, # Int(optional): The expected maximum number of cell types within each spot.
     # Make effect when pseudo_st_path is None.
-    'num_cpu': -1, # Int(optional): The number of CPU deployed for pseudo spots generation.
+    'num_cpu': 4, # Int(optional): The number of CPU deployed for pseudo spots generation.
     'num_nodes': 200, # Int(optional): The number of nodes within each pseudo graph,
     # In contrast with the number of spots in the ST.
     'num_epochs': 20, # Int(optional): The number of training epochs. Default set to 20.
@@ -294,6 +295,7 @@ def train(model, pseudo_loader, real_loader, loss_functions, gpu_id, proj_name, 
 
 
 if __name__ == '__main__':
+    start_time = time.time()
     if not pseudo_st_path:
         sc_adata = sc.read_h5ad(sc_path)
         st_adata = sc.read_h5ad(real_st_path)
@@ -347,3 +349,8 @@ if __name__ == '__main__':
         print(f"total graphs of pseudo-spots for pre-training: {len(pseudo_loader)}")
         print(f"start training seed{i}")
         train(model, pseudo_loader, real_loader, loss_functions, gpu_id, proj_name, sub_name, num_epochs, i)
+
+    end_time = time.time()
+
+    duration = end_time - start_time
+    print(f"Time taken: {duration:.4f} seconds")
