@@ -56,7 +56,8 @@ default_hyper = {
     'sample_ratio': 1.0, # Float(optional): The weight of sample loss. Default set to 1.0.
     'early_stop': False, # Bool(optional): Whether to deploy early stop strategy. Default set to False.
     'interval': 2, # Int(optional): The interval of saving model (default every two epochs).
-    'adaptation_ratio': 1.0 # Float(optional): The weight of domain adaptation loss. Default set to 1.0.
+    'adaptation_ratio': 1.0, # Float(optional): The weight of domain adaptation loss. Default set to 1.0.
+    "result": True # Bool(optional): Whether to output deconvolution results.
 }
 
 # Update default hyperparameters with values from the JSON file
@@ -87,6 +88,7 @@ global_ratio = hyperparameters['sample_ratio']
 early_stop = hyperparameters['early_stop']
 interval = hyperparameters['interval']
 adaptation_ratio = hyperparameters['adaptation_ratio']
+result = hyperparameters['result']
 
 def train(model, pseudo_loader, real_loader, loss_functions, gpu_id, proj_name, sub_name, num_epochs, seed):
     if proj_name:
@@ -349,6 +351,52 @@ if __name__ == '__main__':
         print(f"total graphs of pseudo-spots for pre-training: {len(pseudo_loader)}")
         print(f"start training seed{i}")
         train(model, pseudo_loader, real_loader, loss_functions, gpu_id, proj_name, sub_name, num_epochs, i)
+
+    if result:
+        import pandas as pd
+        for x, ex_adj, sp_adj in real_loader:
+            model.eval()
+            ex_adj, sp_adj = torch.squeeze(ex_adj), torch.squeeze(sp_adj)
+            ex_adj = ex_adj.fill_diagonal_(1.)
+            sp_adj = sp_adj.fill_diagonal_(1.)
+            if gpu_id:
+                x, ex_adj, sp_adj = x.cuda(), ex_adj.cuda(), sp_adj.cuda()
+
+            feature_dict, cls, ratio = model(x, [ex_adj, sp_adj], mode="st")
+
+            ex_adj_out = ratio[0].cpu().detach().numpy()
+            ex_adj_out = np.squeeze(ex_adj_out)
+
+
+            sp_adj_out = ratio[1].cpu().detach().numpy()
+            sp_adj_out = np.squeeze(sp_adj_out)
+
+            header = pseudo_spots_adata.obs.columns[:-1]
+
+            ex_adj_out = pd.DataFrame(ex_adj_out, columns=header)  # Create a DataFrame with the tensor data and header
+
+            ex_adj_out = ex_adj_out[sorted(ex_adj_out.columns)]
+
+            out_path = f"./outputs/{sub_name}"
+            if not os.path.exists(out_path):
+                os.makedirs(out_path)
+                print("Directory created:", out_path)
+            else:
+                print("Directory already exists:", out_path)
+
+            model_path = f"./checkpoints/{sub_name}/{sub_name}_{num_epochs}_seed{seed_list[0]}.model"
+
+            ex_adj_out.to_csv(f'{out_path}/ex_adj_out_{model_path.split("/")[-1]}.csv', index=False)  # Save the DataFrame as a CSV file without the index
+
+            sp_adj_out = pd.DataFrame(sp_adj_out, columns=header)  # Create a DataFrame with the tensor data and header
+
+            sp_adj_out = sp_adj_out[sorted(sp_adj_out.columns)]
+
+            sp_adj_out.to_csv(f'{out_path}/sp_adj_out_{model_path.split("/")[-1]}.csv', index=False)  # Save the DataFrame as a CSV file without the index
+
+            mean_out = (ex_adj_out + sp_adj_out) / 2
+
+            mean_out.to_csv(f'{out_path}/mean_out_{model_path.split("/")[-1]}.csv', index=False)
 
     end_time = time.time()
 
