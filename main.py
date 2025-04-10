@@ -352,15 +352,24 @@ if __name__ == '__main__':
         print(f"start training seed{i}")
         train(model, pseudo_loader, real_loader, loss_functions, gpu_id, proj_name, sub_name, num_epochs, i)
 
+
+
     if result:
         import pandas as pd
+        if gpu_id != None:
+            device = torch.device("cuda:{}".format(gpu_id))
+            print(f"Using GPU: {gpu_id}")
+        else:
+            device = torch.device("cpu")
+            print(f"Using CPU")
+        model.eval()
+        model.to(device)
         for x, ex_adj, sp_adj in real_loader:
-            model.eval()
             ex_adj, sp_adj = torch.squeeze(ex_adj), torch.squeeze(sp_adj)
             ex_adj = ex_adj.fill_diagonal_(1.)
             sp_adj = sp_adj.fill_diagonal_(1.)
-            if gpu_id:
-                x, ex_adj, sp_adj = x.cuda(), ex_adj.cuda(), sp_adj.cuda()
+            if gpu_id != None:
+                x, ex_adj, sp_adj = x.to(device), ex_adj.to(device), sp_adj.to(device)
 
             feature_dict, cls, ratio = model(x, [ex_adj, sp_adj], mode="st")
 
