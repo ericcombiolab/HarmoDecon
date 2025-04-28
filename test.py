@@ -196,7 +196,7 @@ if __name__ == "__main__":
     torch.cuda.manual_seed(seed)
 
     if not pseudo_st_path:
-        pseudo_st_path = './pseudo_spots_tmp.h5ad'
+        pseudo_st_path = './pseudo_graph_tmp.h5ad'
     print(f"Obtain cell types label referring to {pseudo_st_path}")
     pseudo_spots_adata = sc.read_h5ad(pseudo_st_path)
 

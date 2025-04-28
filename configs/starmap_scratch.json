@@ -1,7 +1,7 @@
 {
-  "proj_name":"HarmoDecon",
-  "sub_name":"starmap_cpu",
-  "real_st_path": "./data/starmap_spatial.h5ad",
-  "real_location_path": "./data/combined_Locations.txt",
-  "sc_path" : "./data/starmap_sc_rna.h5ad"
+  "sub_name":"starmap_scratch",
+  "real_st_path": "./data/STARmap/starmap_spatial.h5ad",
+  "real_location_path": "./data/STARmap/combined_Locations.txt",
+  "sc_path" : "./data/STARmap/starmap_sc_rna.h5ad",
+  "gpu_id": 0
 }

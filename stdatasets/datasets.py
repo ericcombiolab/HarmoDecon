@@ -176,13 +176,31 @@ class StDataset(Dataset):
             pre_data = ST_preprocess(ori_data, highly_variable_genes=self.hvg, scale=self.scale)
         st_genes = pre_data.var_names
         pseudo_spots_genes = pseudo_data.var_names
-        if not all(gene in pseudo_spots_genes for gene in st_genes):
+
+        # if not all(gene in pseudo_spots_genes for gene in st_genes):
+        #     print("Not all the genes in ST recorded in pseudo spots")
+        #     common_genes = set(st_genes).intersection(set(pseudo_spots_genes))
+        #     # sort common_genes so that they will be always in order
+        #     pseudo_data = pseudo_data[:, list(common_genes)]
+        #     pre_data = pre_data[:, list(common_genes)]
+        # else:
+        #     pseudo_data = pseudo_data[:, pre_data.var_names]
+
+        st_genes_set = set(st_genes)
+        pseudo_spots_genes_set = set(pseudo_spots_genes)
+
+        if not st_genes_set.issubset(pseudo_spots_genes_set):
             print("Not all the genes in ST recorded in pseudo spots")
-            common_genes = set(st_genes).intersection(set(pseudo_spots_genes))
-            pseudo_data = pseudo_data[:, list(common_genes)]
-            pre_data = pre_data[:, list(common_genes)]
+            # Keep original order of st_genes while filtering
+            common_genes = [gene for gene in st_genes if gene in pseudo_spots_genes_set]
+
+            # Subset data (works for pandas, anndata, numpy)
+            pseudo_data = pseudo_data[:, common_genes]
+            pre_data = pre_data[:, common_genes]
         else:
-            pseudo_data = pseudo_data[:, pre_data.var_names]
+            # Ensure column alignment (if pre_data.var_names is the correct order)
+            pseudo_data = pseudo_data[:, st_genes]
+
         if isinstance(self.pseudo_st_path, str):
             path = self.pseudo_st_path
         else:
