@@ -18,9 +18,24 @@ def generate_a_spot_poisson(adata_scrna, lam, max_cell_types_in_spot, library):
                                                replace=False)
 
     picked_cell_type = np.unique(np.random.choice(cell_type_list_selected, size=cell_num), return_counts=True)
-    picked_cells = [np.random.choice(library[picked_cell_type[0][i]], picked_cell_type[1][i], replace=False) for i in
-                    range(picked_cell_type[0].size)]
-    picked_cells = [x for xs in picked_cells for x in xs]
+
+    picked_cells = []
+    for i in range(picked_cell_type[0].size):
+        cell_type = picked_cell_type[0][i]
+        count = picked_cell_type[1][i]
+        available_cells = library[cell_type]
+
+        # Ensure we don't try to sample more than available
+        if count > len(available_cells):
+            count = len(available_cells)
+
+        if count > 0:  # Only sample if there are cells available
+            sampled = np.random.choice(available_cells, count, replace=False)
+            picked_cells.extend(sampled)
+
+    # picked_cells = [np.random.choice(library[picked_cell_type[0][i]], picked_cell_type[1][i], replace=False) for i in
+    #                 range(picked_cell_type[0].size)]
+    # picked_cells = [x for xs in picked_cells for x in xs]
     return adata_scrna[picked_cells]
 
 def pseudo_spot_generation(sc_exp,

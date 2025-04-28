@@ -57,7 +57,8 @@ default_hyper = {
     'early_stop': False, # Bool(optional): Whether to deploy early stop strategy. Default set to False.
     'interval': 2, # Int(optional): The interval of saving model (default every two epochs).
     'adaptation_ratio': 1.0, # Float(optional): The weight of domain adaptation loss. Default set to 1.0.
-    "result": True # Bool(optional): Whether to output deconvolution results.
+    "result": True, # Bool(optional): Whether to output deconvolution results.
+    "save_spot": False
 }
 
 # Update default hyperparameters with values from the JSON file
@@ -89,6 +90,10 @@ early_stop = hyperparameters['early_stop']
 interval = hyperparameters['interval']
 adaptation_ratio = hyperparameters['adaptation_ratio']
 result = hyperparameters['result']
+save_spot = hyperparameters['save_spot']
+
+if early_stop:
+    num_spots = int(num_spots / 0.8)
 
 def train(model, pseudo_loader, real_loader, loss_functions, gpu_id, proj_name, sub_name, num_epochs, seed):
     if proj_name:
@@ -151,6 +156,8 @@ def train(model, pseudo_loader, real_loader, loss_functions, gpu_id, proj_name, 
                 optimizer.zero_grad()
 
                 feature_dict, cls, ratio = model(x, ex_adj, mode="sc")
+
+
 
                 zeros = torch.zeros((cls.shape[1])).type(torch.LongTensor).to(device)
                 recon_loss = loss_functions.reconstruction_graph_loss(ex_adj, feature_dict['reconstruct_graph'])
@@ -280,7 +287,7 @@ def train(model, pseudo_loader, real_loader, loss_functions, gpu_id, proj_name, 
                 save_path = os.path.join(path, model_name)
                 torch.save(model.state_dict(), save_path)
                 print(f"save model at {model_name}")
-                # break
+                break
 
 
         if (epoch+1) % interval == 0 and (epoch+1) > 10:
@@ -294,35 +301,61 @@ def train(model, pseudo_loader, real_loader, loss_functions, gpu_id, proj_name, 
 
     print('Finished Training')
 
+def read_and_process_data(sc_path, real_st_path,num_spots,mean_num_cells_each_spot,max_cell_types_each_spot,num_cpu,save_spot):
+    sc_adata = sc.read_h5ad(sc_path)
+    st_adata = sc.read_h5ad(real_st_path)
 
+    start_time = time.time()
+
+    if hvg:
+        hvg_adata = ST_preprocess(st_adata, highly_variable_genes=hvg)
+        st_genes = hvg_adata.var_names
+    else:
+        st_genes = st_adata.var_names
+    sc_genes = sc_adata.var.index.values
+    common_genes = set(st_genes).intersection(set(sc_genes))
+
+    sc_adata_filter = sc_adata[:, list(common_genes)]
+
+    spots_adata = pseudo_spot_generation(sc_exp=sc_adata_filter, spot_num=num_spots, lam=mean_num_cells_each_spot - 1,
+                                         generation_method='celltype',
+                                         max_cell_types_in_spot=max_cell_types_each_spot, n_jobs=num_cpu)
+    if save_spot:
+        spots_adata.write('./pseudo_spots_tmp.h5ad')
+        pseudo_st_path = './pseudo_spots_tmp.h5ad'
+
+        return pseudo_st_path
+    else:
+        return spots_adata
 
 if __name__ == '__main__':
     start_time = time.time()
     if not pseudo_st_path:
-        sc_adata = sc.read_h5ad(sc_path)
-        st_adata = sc.read_h5ad(real_st_path)
-
-        if hvg:
-            hvg_adata = ST_preprocess(st_adata, highly_variable_genes=hvg)
-            st_genes = hvg_adata.var_names
+        if save_spot:
+            pseudo_st_path = read_and_process_data(sc_path, real_st_path,num_spots,mean_num_cells_each_spot,max_cell_types_each_spot,num_cpu,save_spot)
+            pseudo_spots_adata = sc.read_h5ad(pseudo_st_path)
         else:
-            st_genes = st_adata.var_names
-        sc_genes = sc_adata.var.index.values
-        common_genes = set(st_genes).intersection(set(sc_genes))
+            pseudo_spots_adata = read_and_process_data(sc_path, real_st_path, num_spots, mean_num_cells_each_spot,
+                                                   max_cell_types_each_spot, num_cpu, save_spot)
+            pseudo_st_path = pseudo_spots_adata
+        import gc
+        # Force garbage collection
+        gc.collect()
 
-        sc_adata_filter = sc_adata[:, list(common_genes)]
-
-        spots_adata = pseudo_spot_generation(sc_exp=sc_adata_filter, spot_num=num_spots, lam=mean_num_cells_each_spot - 1,
-                                           generation_method='celltype',
-                                           max_cell_types_in_spot=max_cell_types_each_spot, n_jobs=num_cpu)
-        spots_adata.write('./pseudo_spots_tmp.h5ad')
-        pseudo_st_path = './pseudo_spots_tmp.h5ad'
     real_dataset = StDataset(data_path=real_st_path, location_path=real_location_path, pseudo_st_path=pseudo_st_path,
                              hvg=hvg, scale=scale, marker_path=marker_path, spatial_dist=spatial_dist, k=int(6*spatial_dist/1.5))
 
-    pseudo_spots_adata = sc.read_h5ad(pseudo_st_path)
+    if isinstance(pseudo_st_path, str):
+        pseudo_spots_adata = sc.read_h5ad(pseudo_st_path)
+    else:
+        pseudo_spots_adata = pseudo_st_path
 
     num_cell_types = len(pseudo_spots_adata.obs.columns) - 1
+
+    header = pseudo_spots_adata.obs.columns[:-1]
+
+    del(pseudo_spots_adata)
+
 
     num_hvg = len(real_dataset[0][0][-1])
 
@@ -345,67 +378,63 @@ if __name__ == '__main__':
         model = GMGATModel(block_type="GCN", num_heads=2, st_encoder_in_channels=[num_hvg, 256, 256],
                            num_classes=domain_classes, num_cell_type=num_cell_types)
 
-        pseudo_dataset = PseudoDataset(data_path='./pseudo_graph_tmp.h5ad', node_num=pseudo_node_num, seed=i, scale=scale)
+        pseudo_dataset = PseudoDataset(data_path=pseudo_st_path, node_num=pseudo_node_num, seed=i, scale=scale)
 
         pseudo_loader = DataLoader(pseudo_dataset, batch_size=1, shuffle=True)
         print(f"total graphs of pseudo-spots for pre-training: {len(pseudo_loader)}")
         print(f"start training seed{i}")
         train(model, pseudo_loader, real_loader, loss_functions, gpu_id, proj_name, sub_name, num_epochs, i)
 
-
-
-    if result:
-        import pandas as pd
-        if gpu_id != None:
-            device = torch.device("cuda:{}".format(gpu_id))
-            print(f"Using GPU: {gpu_id}")
-        else:
-            device = torch.device("cpu")
-            print(f"Using CPU")
-        model.eval()
-        model.to(device)
-        for x, ex_adj, sp_adj in real_loader:
-            ex_adj, sp_adj = torch.squeeze(ex_adj), torch.squeeze(sp_adj)
-            ex_adj = ex_adj.fill_diagonal_(1.)
-            sp_adj = sp_adj.fill_diagonal_(1.)
+        if result:
+            import pandas as pd
             if gpu_id != None:
-                x, ex_adj, sp_adj = x.to(device), ex_adj.to(device), sp_adj.to(device)
-
-            feature_dict, cls, ratio = model(x, [ex_adj, sp_adj], mode="st")
-
-            ex_adj_out = ratio[0].cpu().detach().numpy()
-            ex_adj_out = np.squeeze(ex_adj_out)
-
-
-            sp_adj_out = ratio[1].cpu().detach().numpy()
-            sp_adj_out = np.squeeze(sp_adj_out)
-
-            header = pseudo_spots_adata.obs.columns[:-1]
-
-            ex_adj_out = pd.DataFrame(ex_adj_out, columns=header)  # Create a DataFrame with the tensor data and header
-
-            ex_adj_out = ex_adj_out[sorted(ex_adj_out.columns)]
-
-            out_path = f"./outputs/{sub_name}"
-            if not os.path.exists(out_path):
-                os.makedirs(out_path)
-                print("Directory created:", out_path)
+                device = torch.device("cuda:{}".format(gpu_id))
+                print(f"Using GPU: {gpu_id}")
             else:
-                print("Directory already exists:", out_path)
+                device = torch.device("cpu")
+                print(f"Using CPU")
+            model.eval()
+            model.to(device)
+            for x, ex_adj, sp_adj in real_loader:
+                ex_adj, sp_adj = torch.squeeze(ex_adj), torch.squeeze(sp_adj)
+                ex_adj = ex_adj.fill_diagonal_(1.)
+                sp_adj = sp_adj.fill_diagonal_(1.)
+                if gpu_id != None:
+                    x, ex_adj, sp_adj = x.to(device), ex_adj.to(device), sp_adj.to(device)
 
-            model_path = f"./checkpoints/{sub_name}/{sub_name}_{num_epochs}_seed{seed_list[0]}.model"
+                feature_dict, cls, ratio = model(x, [ex_adj, sp_adj], mode="st")
 
-            ex_adj_out.to_csv(f'{out_path}/ex_adj_out_{model_path.split("/")[-1]}.csv', index=False)  # Save the DataFrame as a CSV file without the index
+                ex_adj_out = ratio[0].cpu().detach().numpy()
+                ex_adj_out = np.squeeze(ex_adj_out)
 
-            sp_adj_out = pd.DataFrame(sp_adj_out, columns=header)  # Create a DataFrame with the tensor data and header
 
-            sp_adj_out = sp_adj_out[sorted(sp_adj_out.columns)]
+                sp_adj_out = ratio[1].cpu().detach().numpy()
+                sp_adj_out = np.squeeze(sp_adj_out)
 
-            sp_adj_out.to_csv(f'{out_path}/sp_adj_out_{model_path.split("/")[-1]}.csv', index=False)  # Save the DataFrame as a CSV file without the index
+                ex_adj_out = pd.DataFrame(ex_adj_out, columns=header)  # Create a DataFrame with the tensor data and header
 
-            mean_out = (ex_adj_out + sp_adj_out) / 2
+                ex_adj_out = ex_adj_out[sorted(ex_adj_out.columns)]
 
-            mean_out.to_csv(f'{out_path}/mean_out_{model_path.split("/")[-1]}.csv', index=False)
+                out_path = f"./outputs/{sub_name}"
+                if not os.path.exists(out_path):
+                    os.makedirs(out_path)
+                    print("Directory created:", out_path)
+                else:
+                    print("Directory already exists:", out_path)
+
+                model_path = f"./checkpoints/{sub_name}/{sub_name}_{num_epochs}_seed{i}.model"
+
+                ex_adj_out.to_csv(f'{out_path}/ex_adj_out_{model_path.split("/")[-1]}.csv', index=False)  # Save the DataFrame as a CSV file without the index
+
+                sp_adj_out = pd.DataFrame(sp_adj_out, columns=header)  # Create a DataFrame with the tensor data and header
+
+                sp_adj_out = sp_adj_out[sorted(sp_adj_out.columns)]
+
+                sp_adj_out.to_csv(f'{out_path}/sp_adj_out_{model_path.split("/")[-1]}.csv', index=False)  # Save the DataFrame as a CSV file without the index
+
+                mean_out = (ex_adj_out + sp_adj_out) / 2
+
+                mean_out.to_csv(f'{out_path}/mean_out_{model_path.split("/")[-1]}.csv', index=False)
 
     end_time = time.time()
 

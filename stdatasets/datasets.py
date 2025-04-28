@@ -62,7 +62,10 @@ import csv
 class PseudoDataset(Dataset):
     def __init__(self, data_path, node_num, scale, seed=None, k=6, neighbor_method="MNN"):
         super(PseudoDataset, self).__init__()
-        self.data = sc.read_h5ad(data_path)
+        if isinstance(data_path, str):
+            self.data = sc.read_h5ad(data_path)
+        else:
+            self.data = data_path
         self.node_num = node_num
         self.seed = seed
         self.scale = scale
@@ -106,10 +109,16 @@ class PseudoDataset(Dataset):
 
 
 class StDataset(Dataset):
-    def __init__(self, data_path, location_path, hvg, scale, pseudo_st_path, spatial_dist, k=6, neighbor_method="MNN", marker_path=None):
+    def __init__(self, data_path, location_path, hvg, scale, pseudo_st_path, spatial_dist, k=6, neighbor_method="MNN", marker_path=None, save_spot=False):
         super(StDataset, self).__init__()
+        self.save_spot = save_spot
         self.data = sc.read_h5ad(data_path)
-        self.pseudo_st_data = sc.read_h5ad(pseudo_st_path)
+        # print(type(pseudo_st_path))
+        if isinstance(pseudo_st_path, str):
+            self.pseudo_st_data = sc.read_h5ad(pseudo_st_path)
+        else:
+            self.pseudo_st_data = pseudo_st_path
+        self.pseudo_st_path = pseudo_st_path
         self.k = k
         self.spatial_dist = spatial_dist
         self.scale = scale
@@ -174,7 +183,10 @@ class StDataset(Dataset):
             pre_data = pre_data[:, list(common_genes)]
         else:
             pseudo_data = pseudo_data[:, pre_data.var_names]
-        path = "./pseudo_graph_tmp.h5ad"
+        if isinstance(self.pseudo_st_path, str):
+            path = self.pseudo_st_path
+        else:
+            path = "./pseudo_graph_tmp.h5ad"
         pseudo_data.write(path)
         print(f"Select {len(pre_data.var_names)} HVGs")
         #         x = self.data.X
