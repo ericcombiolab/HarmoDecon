@@ -65,7 +65,7 @@ class PseudoDataset(Dataset):
         if isinstance(data_path, str):
             self.data = sc.read_h5ad(data_path)
         else:
-            self.data = data_path
+            self.data = sc.read_h5ad("./pseudo_graph_tmp.h5ad")
         self.node_num = node_num
         self.seed = seed
         self.scale = scale
