@@ -348,7 +348,7 @@ if __name__ == '__main__':
     if isinstance(pseudo_st_path, str):
         pseudo_spots_adata = sc.read_h5ad(pseudo_st_path)
     else:
-        pseudo_spots_adata = pseudo_st_path
+        pseudo_spots_adata = sc.read_h5ad("./pseudo_graph_tmp.h5ad")
 
     num_cell_types = len(pseudo_spots_adata.obs.columns) - 1
 
